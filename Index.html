@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Presupuestos PX</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00353F">
-    <link rel="apple-touch-icon" href="logo-192.png">
+    <link rel="apple-touch-icon" href="./logo-192.png">
 
     <style>
         :root {
@@ -37,6 +37,20 @@
             90% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-20px); }
         }
+        /* Filter button styles */
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+        .filter-btn.active {
+            background-color: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -46,18 +60,18 @@
         <!-- Header -->
         <header class="bg-primary-dark p-4 shadow-md sticky top-0 z-10 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img id="logo-img" src="" alt="Logo PX" class="h-10 w-10">
+                <img id="logo-img" src="./logo-192.png" alt="Logo PX" class="h-10 w-10">
                 <h1 class="text-2xl font-bold text-white">Presupuestos PX</h1>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="p-4 space-y-6">
+        <main class="p-4 space-y-6 pb-24">
             <!-- Project Details -->
             <div id="project-details" class="space-y-2">
                 <div class="flex justify-between items-center">
                     <h2 id="project-name" class="text-xl font-semibold text-primary-dark"></h2>
-                    <button id="edit-project-btn" class="text-primary-dark hover:text-primary-gold">
+                    <button id="edit-project-btn" class="text-primary-dark hover:text-primary-gold p-1 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path></svg>
                     </button>
                 </div>
@@ -70,7 +84,7 @@
                     <p id="available-budget" class="text-xl font-bold text-blue-900"></p>
                 </div>
                 <div class="bg-red-50 border border-red-200 p-3 rounded-lg">
-                    <h3 class="text-sm font-medium text-red-700">Total Gastado</h3>
+                    <h3 class="text-sm font-medium text-red-700">Total Gastado (General)</h3>
                     <p id="total-spent" class="text-xl font-bold text-red-900"></p>
                 </div>
                  <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
@@ -78,17 +92,38 @@
                     <p id="client-balance" class="text-xl font-bold text-green-900"></p>
                 </div>
                 <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
-                    <h3 class="text-sm font-medium text-yellow-700">Valor Total Obra</h3>
-                    <p id="total-value" class="text-xl font-bold text-yellow-900"></p>
+                    <h3 id="filtered-total-title" class="text-sm font-medium text-yellow-700">Total Gastos (Filtro)</h3>
+                    <p id="filtered-total" class="text-xl font-bold text-yellow-900"></p>
                 </div>
             </div>
 
-            <!-- Transactions List -->
+            <!-- Transactions -->
             <div>
-                <h3 class="text-lg font-semibold mb-2 text-primary-dark">Movimientos</h3>
+                 <h3 class="text-lg font-semibold mb-2 text-primary-dark">Movimientos</h3>
+                <!-- Filters -->
+                <div class="flex space-x-2 mb-4 text-sm" id="filter-buttons">
+                    <button data-filter="all" class="filter-btn active">Todos los Gastos</button>
+                    <button data-filter="gasto_incluido" class="filter-btn">Incluidos</button>
+                    <button data-filter="gasto_extra" class="filter-btn">Extras</button>
+                    <button data-filter="abono_cliente" class="filter-btn">Abonos</button>
+                </div>
+                <!-- Transactions List -->
                 <div id="transactions-list" class="space-y-3">
                     <!-- Transactions will be dynamically inserted here -->
                 </div>
+            </div>
+
+            <!-- Actions Section -->
+            <div class="mt-8 border-t pt-6 space-y-3">
+                 <h3 class="text-lg font-semibold text-primary-dark">Acciones del Proyecto</h3>
+                 <button id="export-btn" class="w-full bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"></path></svg>
+                    <span>Exportar Datos</span>
+                 </button>
+                 <button id="reset-btn" class="w-full bg-red-100 text-red-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-red-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,56a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,56Zm-8,64a8,8,0,0,0-8-8H40a8,8,0,0,0,0,16H208A8,8,0,0,0,216,120Zm-8,64a8,8,0,0,0-8-8H40a8,8,0,0,0,0,16H208A8,8,0,0,0,216,184Z" transform="rotate(45 128 128)"></path></svg>
+                     <span>Reiniciar Proyecto</span>
+                 </button>
             </div>
         </main>
         
@@ -109,31 +144,41 @@
 
     <script>
         const app = {
-            db: {
+            db: null,
+            currentFilter: 'all',
+
+            defaultDB: {
                 project: {
-                    name: "Obra Principal",
-                    totalValue: 34000000,
-                    estimatedBudget: 20000000,
+                    name: "Nueva Obra",
+                    totalValue: 0,
+                    estimatedBudget: 0,
                     transactions: []
                 }
             },
 
-            logoBase64: 'data:image/png;base64,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',
-
             init() {
-                // Load data from localStorage
                 this.loadData();
-                
-                // Initial UI Render
-                document.getElementById('logo-img').src = this.logoBase64;
                 this.updateUI();
-
-                // Register Service Worker
                 this.registerSW();
-                
-                // Attach Event Listeners
+                this.attachEventListeners();
+            },
+
+            attachEventListeners() {
                 document.getElementById('add-transaction-btn').addEventListener('click', () => this.openTransactionModal());
                 document.getElementById('edit-project-btn').addEventListener('click', () => this.openProjectModal());
+                document.getElementById('export-btn').addEventListener('click', () => this.exportData());
+                document.getElementById('reset-btn').addEventListener('click', () => this.confirmReset());
+
+                document.querySelectorAll('.filter-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.setFilter(e.target.dataset.filter);
+                    });
+                });
+            },
+            
+            setFilter(filter) {
+                this.currentFilter = filter;
+                this.updateUI();
             },
 
             formatCurrency(amount) {
@@ -145,38 +190,74 @@
                 
                 document.getElementById('project-name').textContent = proj.name;
 
-                // Calculations
+                // --- Global Calculations ---
                 const totalGastosIncluidos = proj.transactions.filter(t => t.type === 'gasto_incluido').reduce((sum, t) => sum + t.amount, 0);
                 const totalGastosExtras = proj.transactions.filter(t => t.type === 'gasto_extra').reduce((sum, t) => sum + t.amount, 0);
                 const totalAbonos = proj.transactions.filter(t => t.type === 'abono_cliente').reduce((sum, t) => sum + t.amount, 0);
                 
-                const totalGastado = totalGastosIncluidos + totalGastosExtras;
-                const presupuestoDisponible = proj.estimatedBudget - totalGastado;
+                const totalGastadoGeneral = totalGastosIncluidos + totalGastosExtras;
+                const presupuestoDisponible = proj.estimatedBudget - totalGastadoGeneral;
                 const saldoCliente = proj.totalValue - totalAbonos;
 
-                // Update summary cards
+                // Update global summary cards
                 document.getElementById('available-budget').textContent = this.formatCurrency(presupuestoDisponible);
-                document.getElementById('total-spent').textContent = this.formatCurrency(totalGastado);
+                document.getElementById('total-spent').textContent = this.formatCurrency(totalGastadoGeneral);
                 document.getElementById('client-balance').textContent = this.formatCurrency(saldoCliente);
-                document.getElementById('total-value').textContent = this.formatCurrency(proj.totalValue);
 
-                // Render transactions list
+                // --- Filtered Calculations & Rendering ---
+                const filteredTransactions = proj.transactions.filter(t => {
+                    if (this.currentFilter === 'all') {
+                        // **CHANGE**: Only include expense types
+                        return t.type === 'gasto_incluido' || t.type === 'gasto_extra';
+                    }
+                    return t.type === this.currentFilter;
+                });
+
+                const filteredTotal = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
+                const filteredTitleEl = document.getElementById('filtered-total-title');
+                
+                // Update filtered total card
+                switch(this.currentFilter) {
+                    case 'gasto_incluido':
+                        filteredTitleEl.textContent = 'Total Gastos Incluidos';
+                        break;
+                    case 'gasto_extra':
+                        filteredTitleEl.textContent = 'Total Gastos Extras';
+                        break;
+                    case 'abono_cliente':
+                        filteredTitleEl.textContent = 'Total Abonos';
+                        break;
+                    default: // "all" case
+                        filteredTitleEl.textContent = 'Total de Gastos';
+                }
+                document.getElementById('filtered-total').textContent = this.formatCurrency(filteredTotal);
+
+                // --- Render transactions list ---
+                this.renderTransactionList(filteredTransactions);
+                
+                // Update filter button active state
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.filter === this.currentFilter);
+                });
+            },
+            
+            renderTransactionList(transactions) {
                 const listEl = document.getElementById('transactions-list');
-                listEl.innerHTML = ''; // Clear list
+                listEl.innerHTML = ''; 
 
-                if (proj.transactions.length === 0) {
-                    listEl.innerHTML = `<p class="text-gray-500 italic text-center mt-4">No hay movimientos registrados.</p>`;
+                if (transactions.length === 0) {
+                    listEl.innerHTML = `<p class="text-gray-500 italic text-center mt-4">No hay movimientos que coincidan con el filtro.</p>`;
                     return;
                 }
 
-                proj.transactions.slice().sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+                transactions.slice().sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
                     const isExpense = t.type.startsWith('gasto');
                     const sign = isExpense ? '-' : '+';
                     const colorClass = isExpense ? 'text-red-600' : 'text-green-600';
                     const typeText = t.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
 
                     const transactionEl = document.createElement('div');
-                    transactionEl.className = 'bg-white p-3 rounded-lg border flex justify-between items-center';
+                    transactionEl.className = 'bg-white p-3 rounded-lg border flex justify-between items-center animate-fade-in';
                     transactionEl.innerHTML = `
                         <div class="flex items-center space-x-3">
                             ${t.imageUrl ? `<img src="${t.imageUrl}" class="w-12 h-12 rounded-md object-cover cursor-pointer" onclick="app.showImage('${t.imageUrl}')">` : '<div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#9CA3AF" viewBox="0 0 256 256"><path d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8ZM112,88a32,32,0,1,1-32,32A32,32,0,0,1,112,88Zm-4.4,55.6L80,184H176l-32.8-54.67a8,8,0,0,0-13.6,0Z"></path></svg></div>'}
@@ -196,43 +277,49 @@
 
             saveData() {
                 localStorage.setItem('presupuestosPXDB', JSON.stringify(this.db));
-                this.showToast('Datos guardados exitosamente.');
+                this.showToast('Datos guardados.');
             },
 
             loadData() {
                 const data = localStorage.getItem('presupuestosPXDB');
                 if (data) {
                     this.db = JSON.parse(data);
+                } else {
+                    this.db = JSON.parse(JSON.stringify(this.defaultDB));
                 }
             },
 
-            createModal(title, content) {
+            createModal(title, content, options = {}) {
                 const modalContainer = document.getElementById('modal-container');
                 const modal = document.createElement('div');
                 modal.id = 'modal';
                 modal.className = 'modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50';
+                
+                let headerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-primary-dark">${title}</h3>
+                        <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+                    </div>`;
+
                 modal.innerHTML = `
                     <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6 transform scale-95">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-primary-dark">${title}</h3>
-                            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
-                        </div>
+                        ${options.noHeader ? '' : headerHTML}
                         <div>${content}</div>
                     </div>
                 `;
                 modalContainer.appendChild(modal);
 
-                // Animate modal
                 setTimeout(() => {
                     modal.classList.add('opacity-100');
                     modal.querySelector('.modal-content').classList.remove('scale-95');
                 }, 10);
 
-                // Close listeners
                 modal.addEventListener('click', (e) => {
                     if (e.target.id === 'modal') this.closeModal();
                 });
-                document.getElementById('close-modal-btn').addEventListener('click', this.closeModal);
+                if (!options.noHeader) {
+                    document.getElementById('close-modal-btn').addEventListener('click', () => this.closeModal());
+                }
                 return modal;
             },
             
@@ -242,13 +329,15 @@
                     modal.classList.remove('opacity-100');
                     modal.querySelector('.modal-content').classList.add('scale-95');
                     setTimeout(() => {
-                        modal.parentElement.innerHTML = '';
+                        if (modal.parentElement) {
+                            modal.parentElement.innerHTML = '';
+                        }
                     }, 250);
                 }
             },
             
             openProjectModal() {
-                const content = `
+                 const content = `
                     <form id="project-form" class="space-y-4">
                         <div>
                             <label for="p-name" class="block text-sm font-medium text-gray-700">Nombre de la Obra</label>
@@ -344,13 +433,51 @@
                 });
             },
             
-            deleteTransaction(id) {
-                if (confirm('¿Estás seguro de que quieres eliminar este movimiento?')) {
-                    this.db.project.transactions = this.db.project.transactions.filter(t => t.id !== id);
-                    this.saveData();
-                    this.updateUI();
-                    this.showToast('Movimiento eliminado.');
+            confirmReset() {
+                const content = `
+                    <p class="text-center text-gray-700 mb-6">¿Estás seguro de que quieres borrar todos los datos del proyecto actual? Esta acción no se puede deshacer.</p>
+                    <div class="flex justify-center space-x-4">
+                        <button id="cancel-reset" class="py-2 px-6 bg-gray-200 text-gray-800 rounded-lg font-semibold">Cancelar</button>
+                        <button id="confirm-reset-btn" class="py-2 px-6 bg-red-600 text-white rounded-lg font-semibold">Sí, Reiniciar</button>
+                    </div>
+                `;
+                const modal = this.createModal('Confirmar Reinicio', content, { noHeader: true });
+                document.getElementById('confirm-reset-btn').addEventListener('click', () => this.resetProject());
+                document.getElementById('cancel-reset').addEventListener('click', () => this.closeModal());
+            },
+
+            resetProject() {
+                this.db = JSON.parse(JSON.stringify(this.defaultDB));
+                this.currentFilter = 'all';
+                this.saveData();
+                this.updateUI();
+                this.closeModal();
+                this.showToast('Proyecto reiniciado.');
+            },
+            
+            exportData() {
+                try {
+                    const dataStr = JSON.stringify(this.db, null, 2);
+                    const dataBlob = new Blob([dataStr], {type: "application/json"});
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.download = `presupuesto_px_${new Date().toISOString().slice(0,10)}.json`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    this.showToast('Datos exportados.');
+                } catch (error) {
+                    console.error("Error exporting data:", error);
+                    this.showToast('Error al exportar.');
                 }
+            },
+            
+            deleteTransaction(id) {
+                // Simplified confirmation
+                this.db.project.transactions = this.db.project.transactions.filter(t => t.id !== id);
+                this.saveData();
+                this.updateUI();
+                this.showToast('Movimiento eliminado.');
             },
 
             showImage(imageUrl) {
@@ -370,13 +497,18 @@
 
             registerSW() {
                 if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('sw.js')
-                        .then(reg => console.log('Service worker registered successfully', reg))
-                        .catch(err => console.error('Service worker registration failed', err));
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('./sw.js')
+                            .then(reg => console.log('Service worker registered successfully', reg))
+                            .catch(err => console.error('Service worker registration failed', err));
+                    });
                 }
             }
         };
-        app.init();
+        
+        window.onload = () => {
+            app.init();
+        };
     </script>
 </body>
 </html>
