@@ -1,0 +1,21 @@
+{
+  "name": "Presupuestos PX",
+  "short_name": "Presupuestos",
+  "description": "Una aplicación para gestionar presupuestos de obras y gastos.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#00353F",
+  "theme_color": "#00353F",
+  "icons": [
+    {
+      "src": "logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
