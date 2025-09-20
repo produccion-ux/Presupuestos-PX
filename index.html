@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Presupuestos PX</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="manifest" href="./manifest.json">
+    <!-- Rutas corregidas -->
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00353F">
-    <link rel="apple-touch-icon" href="./logo-192.png">
+    <link rel="apple-touch-icon" href="logo-192.png">
 
     <style>
         :root {
@@ -44,14 +45,14 @@
     <div id="app" class="max-w-lg mx-auto bg-white min-h-screen shadow-lg">
         <header class="bg-primary-dark p-4 shadow-md sticky top-0 z-10 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img src="./logo-192.png" alt="Logo PX" class="h-10 w-10">
+                <!-- Ruta corregida -->
+                <img src="logo-192.png" alt="Logo PX" class="h-10 w-10">
                 <h1 class="text-2xl font-bold text-white">Presupuestos PX</h1>
             </div>
         </header>
 
         <main class="p-4 space-y-6 pb-24">
             
-            <!-- Project Sync Section -->
             <div id="sync-section" class="bg-gray-50 border p-3 rounded-lg space-y-3">
                  <div id="project-id-display" class="hidden">
                     <label class="block text-sm font-medium text-gray-700">ID de tu Proyecto (para sincronizar):</label>
@@ -73,7 +74,6 @@
                 </div>
             </div>
 
-            <!-- Main App Content (hidden until project is loaded) -->
             <div id="main-content" class="hidden space-y-6">
                 <div id="project-details" class="space-y-2">
                     <div class="flex justify-between items-center">
@@ -134,13 +134,12 @@
         // Reemplaza este objeto con el que obtuviste de la consola de Firebase.
         // *********************************************************************************
         const firebaseConfig = {
-          apiKey: "AIzaSyBPju-qziiySXSOwjiPW9pcR0_mwFE5j1s",
-          authDomain: "presupuestos-px.firebaseapp.com",
-          projectId: "presupuestos-px",
-          storageBucket: "presupuestos-px.firebasestorage.app",
-          messagingSenderId: "758674286792",
-          appId: "1:758674286792:web:703ed99be79fd5e4ac5dfd",
-          measurementId: "G-K3H3KSEHQ7"
+            apiKey: "AIzaSyBPju-qziiySXSOwjiPW9pcR0_mwFE5j1s",
+            authDomain: "presupuestos-px.firebaseapp.com",
+            projectId: "presupuestos-px",
+            storageBucket: "presupuestos-px.firebasestorage.app",
+            messagingSenderId: "758674286792",
+            appId: "1:758674286792:web:703ed99be79fd5e4ac5dfd",
         };
         
         // --- NO MODIFICAR DEBAJO DE ESTA LÍNEA ---
@@ -151,7 +150,7 @@
             projectData: null,
             projectId: null,
             currentFilter: 'all',
-            unsubscribe: null, // To stop listening to DB changes
+            unsubscribe: null, 
 
             init() {
                 this.attachEventListeners();
@@ -169,16 +168,12 @@
             },
 
             async loadProject(id) {
-                if (!id) {
-                    this.showToast("Por favor, ingresa un ID.");
-                    return;
-                }
+                if (!id) { this.showToast("Por favor, ingresa un ID."); return; }
                 this.projectId = id.trim();
 
-                if (this.unsubscribe) this.unsubscribe(); // Stop listening to the old project
+                if (this.unsubscribe) this.unsubscribe(); 
 
                 const docRef = doc(db, "projects", this.projectId);
-                
                 this.showToast("Cargando proyecto...");
                 
                 this.unsubscribe = onSnapshot(docRef, (docSnap) => {
@@ -188,8 +183,8 @@
                         this.showMainContent();
                         this.updateUI();
                     } else {
-                        this.showToast("ID no encontrado. ¿Quieres crear un proyecto nuevo con este ID?");
-                        this.projectData = null; // Clear old data
+                        this.showToast("ID no encontrado. ¿Crear proyecto con este ID?");
+                        this.projectData = null;
                         this.hideMainContent();
                         document.getElementById('reset-btn').querySelector('span').textContent = 'Crear Proyecto Nuevo';
                     }
@@ -203,19 +198,12 @@
             async createNewProject() {
                 let newId = this.projectId || `proj_${Date.now()}`;
                 const newProjectData = {
-                    name: "Mi Nueva Obra",
-                    totalValue: 0,
-                    estimatedBudget: 0,
-                    transactions: []
+                    name: "Mi Nueva Obra", totalValue: 0, estimatedBudget: 0, transactions: []
                 };
-                
                 try {
                     await setDoc(doc(db, "projects", newId), newProjectData);
                     this.loadProject(newId);
-                } catch(e) {
-                    console.error("Error creating document: ", e);
-                    this.showToast("Error al crear el proyecto.");
-                }
+                } catch(e) { console.error("Error creating document: ", e); this.showToast("Error al crear el proyecto."); }
             },
 
             showMainContent() {
@@ -245,7 +233,6 @@
                 document.getElementById('load-id-input').value = '';
                 this.showToast("Listo para crear o cargar un proyecto.");
                 document.getElementById('reset-btn').querySelector('span').textContent = 'Crear Proyecto Nuevo';
-
             },
             
             async saveData() {
@@ -253,50 +240,28 @@
                 try {
                     await setDoc(doc(db, "projects", this.projectId), this.projectData);
                     this.showToast("Cambios guardados en la nube.");
-                } catch(e) {
-                    console.error("Error saving data: ", e);
-                    this.showToast("Error al guardar. Verifica tu conexión.");
-                }
+                } catch(e) { console.error("Error saving data: ", e); this.showToast("Error al guardar. Verifica tu conexión.");}
             },
-
-            // (El resto de la lógica de UI, modales, etc., es muy similar pero ahora modifica `this.projectData`)
-            // ... [ attachEventListeners, formatCurrency, updateUI, renderTransactionList, etc.]
 
              attachEventListeners() {
                 document.getElementById('load-project-btn').addEventListener('click', () => {
-                    const idToLoad = document.getElementById('load-id-input').value;
-                    this.loadProject(idToLoad);
+                    const idToLoad = document.getElementById('load-id-input').value; this.loadProject(idToLoad);
                 });
-
                 document.getElementById('copy-id-btn').addEventListener('click', () => {
-                    const idInput = document.getElementById('project-id-input');
-                    idInput.select();
-                    document.execCommand('copy');
-                    this.showToast("ID copiado al portapapeles.");
+                    const idInput = document.getElementById('project-id-input'); idInput.select(); document.execCommand('copy'); this.showToast("ID copiado.");
                 });
-                
                 document.getElementById('reset-btn').addEventListener('click', () => {
-                    if (!this.projectId) {
-                        this.createNewProject();
-                    } else {
-                        this.resetApp();
-                    }
+                    if (!this.projectId) { this.createNewProject(); } else { this.resetApp(); }
                 });
-
-                // Attach main content listeners
                 document.getElementById('add-transaction-btn').addEventListener('click', () => this.openTransactionModal());
                 document.getElementById('edit-project-btn').addEventListener('click', () => this.openProjectModal());
                 document.getElementById('export-btn').addEventListener('click', () => this.exportData());
-
                 document.querySelectorAll('.filter-btn').forEach(button => {
                     button.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
                 });
             },
             
-            setFilter(filter) {
-                this.currentFilter = filter;
-                this.updateUI();
-            },
+            setFilter(filter) { this.currentFilter = filter; this.updateUI(); },
 
             formatCurrency(amount) {
                 return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(amount);
@@ -304,7 +269,6 @@
             
             updateUI() {
                 if (!this.projectData) return;
-
                 const proj = this.projectData;
                 document.getElementById('project-name').textContent = proj.name;
 
@@ -312,7 +276,6 @@
                 const totalGastosIncluidos = transactions.filter(t => t.type === 'gasto_incluido').reduce((sum, t) => sum + t.amount, 0);
                 const totalGastosExtras = transactions.filter(t => t.type === 'gasto_extra').reduce((sum, t) => sum + t.amount, 0);
                 const totalAbonos = transactions.filter(t => t.type === 'abono_cliente').reduce((sum, t) => sum + t.amount, 0);
-                
                 const totalGastadoGeneral = totalGastosIncluidos + totalGastosExtras;
                 const presupuestoDisponible = proj.estimatedBudget - totalGastadoGeneral;
                 const saldoCliente = proj.totalValue - totalAbonos;
@@ -325,7 +288,6 @@
                     if (this.currentFilter === 'all') return t.type === 'gasto_incluido' || t.type === 'gasto_extra';
                     return t.type === this.currentFilter;
                 });
-
                 const filteredTotal = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
                 const filteredTitleEl = document.getElementById('filtered-total-title');
                 
@@ -336,9 +298,7 @@
                     default: filteredTitleEl.textContent = 'Total de Gastos';
                 }
                 document.getElementById('filtered-total').textContent = this.formatCurrency(filteredTotal);
-
                 this.renderTransactionList(filteredTransactions);
-                
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.filter === this.currentFilter);
                 });
@@ -347,138 +307,70 @@
             renderTransactionList(transactions) {
                 const listEl = document.getElementById('transactions-list');
                 listEl.innerHTML = ''; 
-
-                if (transactions.length === 0) {
-                    listEl.innerHTML = `<p class="text-gray-500 italic text-center mt-4">No hay movimientos que coincidan.</p>`;
-                    return;
-                }
+                if (transactions.length === 0) { listEl.innerHTML = `<p class="text-gray-500 italic text-center mt-4">No hay movimientos que coincidan.</p>`; return; }
 
                 transactions.slice().sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
                     const isExpense = t.type.startsWith('gasto');
                     const sign = isExpense ? '-' : '+';
                     const colorClass = isExpense ? 'text-red-600' : 'text-green-600';
                     const typeText = t.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-
                     const transactionEl = document.createElement('div');
                     transactionEl.className = 'bg-white p-3 rounded-lg border flex justify-between items-center';
-                    transactionEl.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                             <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#9CA3AF" viewBox="0 0 256 256"><path d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8ZM112,88a32,32,0,1,1-32,32A32,32,0,0,1,112,88Zm-4.4,55.6L80,184H176l-32.8-54.67a8,8,0,0,0-13.6,0Z"></path></svg></div>
-                            <div>
-                                <p class="font-semibold">${t.description}</p>
-                                <p class="text-xs text-gray-500">${new Date(t.date).toLocaleDateString('es-CO')} - ${typeText}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-lg ${colorClass}">${sign} ${this.formatCurrency(t.amount)}</p>
-                             <button onclick="app.deleteTransaction('${t.id}')" class="text-xs text-gray-400 hover:text-red-500 mt-1">Eliminar</button>
-                        </div>
-                    `;
+                    transactionEl.innerHTML = `<div class="flex items-center space-x-3"><div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#9CA3AF" viewBox="0 0 256 256"><path d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8ZM112,88a32,32,0,1,1-32,32A32,32,0,0,1,112,88Zm-4.4,55.6L80,184H176l-32.8-54.67a8,8,0,0,0-13.6,0Z"></path></svg></div><div><p class="font-semibold">${t.description}</p><p class="text-xs text-gray-500">${new Date(t.date).toLocaleDateString('es-CO')} - ${typeText}</p></div></div><div class="text-right"><p class="font-bold text-lg ${colorClass}">${sign} ${this.formatCurrency(t.amount)}</p><button onclick="app.deleteTransaction('${t.id}')" class="text-xs text-gray-400 hover:text-red-500 mt-1">Eliminar</button></div>`;
                     listEl.appendChild(transactionEl);
                 });
             },
             
             openProjectModal() {
-                 const content = `
-                    <form id="project-form" class="space-y-4">
-                        <div><label for="p-name" class="block text-sm font-medium text-gray-700">Nombre de la Obra</label><input type="text" id="p-name" value="${this.projectData.name}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold" required></div>
-                        <div><label for="p-total" class="block text-sm font-medium text-gray-700">Valor Total ($)</label><input type="number" id="p-total" value="${this.projectData.totalValue}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold" required></div>
-                        <div><label for="p-budget" class="block text-sm font-medium text-gray-700">Presupuesto Estimado ($)</label><input type="number" id="p-budget" value="${this.projectData.estimatedBudget}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold" required></div>
-                        <div class="flex justify-end pt-2"><button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg font-semibold hover:bg-opacity-90">Guardar Cambios</button></div>
-                    </form>
-                `;
+                 const content = `<form id="project-form" class="space-y-4"><div><label for="p-name" class="block text-sm font-medium text-gray-700">Nombre</label><input type="text" id="p-name" value="${this.projectData.name}" class="mt-1 block w-full border rounded-md py-2 px-3" required></div><div><label for="p-total" class="block text-sm">Valor Total ($)</label><input type="number" id="p-total" value="${this.projectData.totalValue}" class="mt-1 block w-full border rounded-md py-2 px-3" required></div><div><label for="p-budget" class="block text-sm">Presupuesto ($)</label><input type="number" id="p-budget" value="${this.projectData.estimatedBudget}" class="mt-1 block w-full border rounded-md py-2 px-3" required></div><div class="flex justify-end pt-2"><button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg">Guardar</button></div></form>`;
                 const modal = this.createModal('Editar Detalles de la Obra', content);
                 modal.querySelector('#project-form').addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.projectData.name = document.getElementById('p-name').value;
                     this.projectData.totalValue = parseFloat(document.getElementById('p-total').value);
                     this.projectData.estimatedBudget = parseFloat(document.getElementById('p-budget').value);
-                    this.saveData();
-                    this.closeModal();
+                    this.saveData(); this.closeModal();
                 });
             },
 
             openTransactionModal() {
-                const content = `
-                    <form id="transaction-form" class="space-y-4">
-                         <div><label for="t-description" class="block text-sm font-medium text-gray-700">Descripción</label><input type="text" id="t-description" class="mt-1 block w-full border rounded-md py-2 px-3" required></div>
-                         <div><label for="t-amount" class="block text-sm font-medium text-gray-700">Monto ($)</label><input type="number" id="t-amount" class="mt-1 block w-full border rounded-md py-2 px-3" required></div>
-                         <div><label for="t-type" class="block text-sm font-medium text-gray-700">Tipo</label><select id="t-type" class="mt-1 block w-full border rounded-md py-2 px-3"><option value="gasto_incluido">Gasto Incluido</option><option value="gasto_extra">Gasto Extra</option><option value="abono_cliente">Abono Cliente</option></select></div>
-                         <div class="flex justify-end pt-2"><button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg font-semibold">Agregar</button></div>
-                    </form>
-                `;
+                const content = `<form id="transaction-form" class="space-y-4"><div><label for="t-description" class="block text-sm">Descripción</label><input type="text" id="t-description" class="mt-1 block w-full border rounded-md py-2 px-3" required></div><div><label for="t-amount" class="block text-sm">Monto ($)</label><input type="number" id="t-amount" class="mt-1 block w-full border rounded-md py-2 px-3" required></div><div><label for="t-type" class="block text-sm">Tipo</label><select id="t-type" class="mt-1 block w-full border rounded-md py-2 px-3"><option value="gasto_incluido">Gasto Incluido</option><option value="gasto_extra">Gasto Extra</option><option value="abono_cliente">Abono Cliente</option></select></div><div class="flex justify-end pt-2"><button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg">Agregar</button></div></form>`;
                 const modal = this.createModal('Nuevo Movimiento', content);
                 modal.querySelector('#transaction-form').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const newTransaction = {
-                        id: `txn_${Date.now()}`,
-                        description: document.getElementById('t-description').value,
-                        amount: parseFloat(document.getElementById('t-amount').value),
-                        type: document.getElementById('t-type').value,
-                        date: new Date().toISOString(),
-                    };
+                    const newTransaction = { id: `txn_${Date.now()}`, description: document.getElementById('t-description').value, amount: parseFloat(document.getElementById('t-amount').value), type: document.getElementById('t-type').value, date: new Date().toISOString(), };
                     if (!this.projectData.transactions) this.projectData.transactions = [];
                     this.projectData.transactions.push(newTransaction);
-                    this.saveData();
-                    this.closeModal();
+                    this.saveData(); this.closeModal();
                 });
             },
             
-            deleteTransaction(id) {
-                this.projectData.transactions = this.projectData.transactions.filter(t => t.id !== id);
-                this.saveData();
-            },
+            deleteTransaction(id) { this.projectData.transactions = this.projectData.transactions.filter(t => t.id !== id); this.saveData(); },
 
             exportData() {
                 if(!this.projectData) return;
                 try {
-                    const dataStr = JSON.stringify(this.projectData, null, 2);
-                    const dataBlob = new Blob([dataStr], {type: "application/json"});
-                    const url = URL.createObjectURL(dataBlob);
-                    const link = document.createElement('a');
-                    link.download = `presupuesto_px_${this.projectId}.json`;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
+                    const dataStr = JSON.stringify(this.projectData, null, 2); const dataBlob = new Blob([dataStr], {type: "application/json"}); const url = URL.createObjectURL(dataBlob); const link = document.createElement('a'); link.download = `presupuesto_px_${this.projectId}.json`; link.href = url; link.click(); URL.revokeObjectURL(url);
                 } catch (error) { console.error("Error exporting data:", error); }
             },
 
             createModal(title, content) {
-                const modalContainer = document.getElementById('modal-container');
-                const modal = document.createElement('div');
-                modal.id = 'modal';
-                modal.className = 'modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50';
-                modal.innerHTML = `
-                    <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-primary-dark">${title}</h3>
-                            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
-                        </div>
-                        <div>${content}</div>
-                    </div>
-                `;
-                modalContainer.appendChild(modal);
-                modal.addEventListener('click', (e) => { if (e.target.id === 'modal') this.closeModal(); });
-                document.getElementById('close-modal-btn').addEventListener('click', () => this.closeModal());
-                return modal;
+                const modalContainer = document.getElementById('modal-container'); const modal = document.createElement('div'); modal.id = 'modal'; modal.className = 'modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50';
+                modal.innerHTML = `<div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-primary-dark">${title}</h3><button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button></div><div>${content}</div></div>`;
+                modalContainer.appendChild(modal); modal.addEventListener('click', (e) => { if (e.target.id === 'modal') this.closeModal(); }); document.getElementById('close-modal-btn').addEventListener('click', () => this.closeModal()); return modal;
             },
             
-            closeModal() {
-                const modal = document.getElementById('modal');
-                if (modal) modal.parentElement.innerHTML = '';
-            },
+            closeModal() { const modal = document.getElementById('modal'); if (modal) modal.parentElement.innerHTML = ''; },
 
             showToast(message) {
-                const toastEl = document.getElementById('toast');
-                toastEl.querySelector('p').textContent = message;
-                toastEl.classList.remove('hidden');
-                setTimeout(() => toastEl.classList.add('hidden'), 3000);
+                const toastEl = document.getElementById('toast'); toastEl.querySelector('p').textContent = message; toastEl.classList.remove('hidden'); setTimeout(() => toastEl.classList.add('hidden'), 3000);
             },
             
             registerSW() {
                 if ('serviceWorker' in navigator) {
+                    // Ruta corregida para el service worker
                     window.addEventListener('load', () => {
-                        navigator.serviceWorker.register('./sw.js')
+                        navigator.serviceWorker.register('sw.js')
                             .then(reg => console.log('SW registered.', reg))
                             .catch(err => console.error('SW registration failed: ', err));
                     });
@@ -487,9 +379,7 @@
         };
         
         app.init();
-
     </script>
 </body>
 </html>
-
 
