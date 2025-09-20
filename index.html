@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00353F">
-    <link rel="apple-touch-icon" href="logo-512.png">
+    <link rel="apple-touch-icon" href="./logo-192.png">
 
     <style>
         :root {
@@ -22,15 +22,9 @@
             font-family: 'Inter', sans-serif;
         }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        .modal {
-            transition: opacity 0.25s ease;
-        }
-        .modal-content {
-            transition: transform 0.25s ease;
-        }
-        .toast {
-            animation: fade-in-out 3s ease-in-out forwards;
-        }
+        .modal { transition: opacity 0.25s ease; }
+        .modal-content { transition: transform 0.25s ease; }
+        .toast { animation: fade-in-out 3s ease-in-out forwards; }
         @keyframes fade-in-out {
             0% { opacity: 0; transform: translateY(20px); }
             10% { opacity: 1; transform: translateY(0); }
@@ -38,135 +32,264 @@
             100% { opacity: 0; transform: translateY(-20px); }
         }
         .filter-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-            border: 1px solid #e5e7eb;
-            color: #4b5563;
+            padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 500;
+            transition: all 0.2s ease-in-out; border: 1px solid #e5e7eb; color: #4b5563;
         }
         .filter-btn.active {
-            background-color: var(--primary-dark);
-            color: white;
-            border-color: var(--primary-dark);
+            background-color: var(--primary-dark); color: white; border-color: var(--primary-dark);
         }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-
     <div id="app" class="max-w-lg mx-auto bg-white min-h-screen shadow-lg">
         <header class="bg-primary-dark p-4 shadow-md sticky top-0 z-10 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <!-- Logo image will be set by JS -->
-                <img id="logo-img" alt="Logo PX" class="h-10 w-10">
+                <img src="./logo-192.png" alt="Logo PX" class="h-10 w-10">
                 <h1 class="text-2xl font-bold text-white">Presupuestos PX</h1>
             </div>
         </header>
 
         <main class="p-4 space-y-6 pb-24">
-            <div id="project-details" class="space-y-2">
-                <div class="flex justify-between items-center">
-                    <h2 id="project-name" class="text-xl font-semibold text-primary-dark"></h2>
-                    <button id="edit-project-btn" class="text-primary-dark hover:text-primary-gold p-1 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path></svg>
+            
+            <!-- Project Sync Section -->
+            <div id="sync-section" class="bg-gray-50 border p-3 rounded-lg space-y-3">
+                 <div id="project-id-display" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700">ID de tu Proyecto (para sincronizar):</label>
+                    <div class="mt-1 flex rounded-md shadow-sm">
+                        <input type="text" id="project-id-input" readonly class="block w-full rounded-none rounded-l-md border-gray-300 bg-gray-200 px-3 py-2 text-gray-600 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <button id="copy-id-btn" type="button" class="relative -ml-px inline-flex items-center space-x-2 rounded-r-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M200,32H163.74a47.92,47.92,0,0,0-71.48,0H56A24,24,0,0,0,32,56V216a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm-72,0a32,32,0,1,1-32,32A32,32,0,0,1,128,32Zm72,184H56V56h8v8a24,24,0,0,0,24,24h80a24,24,0,0,0,24-24v-8h8Z"></path></svg>
+                            <span>Copiar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="load-project-section" class="space-y-2">
+                     <p class="text-sm text-center text-gray-600">¿Tienes un ID de proyecto? Cárgalo aquí.</p>
+                     <div class="flex gap-2">
+                        <input type="text" id="load-id-input" placeholder="Pega el ID del proyecto" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2">
+                        <button id="load-project-btn" class="bg-primary-dark text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90">Cargar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main App Content (hidden until project is loaded) -->
+            <div id="main-content" class="hidden space-y-6">
+                <div id="project-details" class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <h2 id="project-name" class="text-xl font-semibold text-primary-dark"></h2>
+                        <button id="edit-project-btn" class="text-primary-dark hover:text-primary-gold p-1 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg"><h3 class="text-sm font-medium text-blue-700">Presupuesto Disponible</h3><p id="available-budget" class="text-xl font-bold text-blue-900"></p></div>
+                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg"><h3 class="text-sm font-medium text-red-700">Total Gastado</h3><p id="total-spent" class="text-xl font-bold text-red-900"></p></div>
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-lg"><h3 class="text-sm font-medium text-green-700">Saldo Cliente</h3><p id="client-balance" class="text-xl font-bold text-green-900"></p></div>
+                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg"><h3 id="filtered-total-title" class="text-sm font-medium text-yellow-700">Total Gastos (Filtro)</h3><p id="filtered-total" class="text-xl font-bold text-yellow-900"></p></div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-2 text-primary-dark">Movimientos</h3>
+                    <div class="flex space-x-2 mb-4 text-sm" id="filter-buttons">
+                        <button data-filter="all" class="filter-btn active">Todos los Gastos</button>
+                        <button data-filter="gasto_incluido" class="filter-btn">Incluidos</button>
+                        <button data-filter="gasto_extra" class="filter-btn">Extras</button>
+                        <button data-filter="abono_cliente" class="filter-btn">Abonos</button>
+                    </div>
+                    <div id="transactions-list" class="space-y-3"></div>
+                </div>
+
+                <div class="mt-8 border-t pt-6 space-y-3">
+                    <h3 class="text-lg font-semibold text-primary-dark">Acciones del Proyecto</h3>
+                    <button id="export-btn" class="w-full bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-300">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"></path></svg>
+                        <span>Exportar Datos</span>
+                    </button>
+                    <button id="reset-btn" class="w-full bg-red-100 text-red-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-red-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M238,128a10,10,0,0,1-10,10H144.3l31.55,31.55a10,10,0,0,1-14.14,14.14l-49.8-49.8a10,10,0,0,1,0-14.14l49.8-49.8a10,10,0,0,1,14.14,14.14L144.3,118H228A10,10,0,0,1,238,128ZM111.7,46.15a10,10,0,0,0-14.14-14.14L31.81,97.76a10,10,0,0,0,0,14.14l65.75,65.75a10,10,0,0,0,14.14-14.14L80.15,132H28a10,10,0,0,1,0-20H80.15l31.55-31.55Z"></path></svg>
+                        <span>Crear/Cargar Otro Proyecto</span>
                     </button>
                 </div>
             </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg">
-                    <h3 class="text-sm font-medium text-blue-700">Presupuesto Disponible</h3>
-                    <p id="available-budget" class="text-xl font-bold text-blue-900"></p>
-                </div>
-                <div class="bg-red-50 border border-red-200 p-3 rounded-lg">
-                    <h3 class="text-sm font-medium text-red-700">Total Gastado (General)</h3>
-                    <p id="total-spent" class="text-xl font-bold text-red-900"></p>
-                </div>
-                 <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
-                    <h3 class="text-sm font-medium text-green-700">Saldo Cliente</h3>
-                    <p id="client-balance" class="text-xl font-bold text-green-900"></p>
-                </div>
-                <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
-                    <h3 id="filtered-total-title" class="text-sm font-medium text-yellow-700">Total Gastos (Filtro)</h3>
-                    <p id="filtered-total" class="text-xl font-bold text-yellow-900"></p>
-                </div>
-            </div>
-
-            <div>
-                 <h3 class="text-lg font-semibold mb-2 text-primary-dark">Movimientos</h3>
-                <div class="flex space-x-2 mb-4 text-sm" id="filter-buttons">
-                    <button data-filter="all" class="filter-btn active">Todos los Gastos</button>
-                    <button data-filter="gasto_incluido" class="filter-btn">Incluidos</button>
-                    <button data-filter="gasto_extra" class="filter-btn">Extras</button>
-                    <button data-filter="abono_cliente" class="filter-btn">Abonos</button>
-                </div>
-                <div id="transactions-list" class="space-y-3"></div>
-            </div>
-
-            <div class="mt-8 border-t pt-6 space-y-3">
-                 <h3 class="text-lg font-semibold text-primary-dark">Acciones del Proyecto</h3>
-                 <button id="export-btn" class="w-full bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"></path></svg>
-                    <span>Exportar Datos</span>
-                 </button>
-                 <button id="reset-btn" class="w-full bg-red-100 text-red-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-red-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,56a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,56Zm-8,64a8,8,0,0,0-8-8H40a8,8,0,0,0,0,16H208A8,8,0,0,0,216,120Zm-8,64a8,8,0,0,0-8-8H40a8,8,0,0,0,0,16H208A8,8,0,0,0,216,184Z" transform="rotate(45 128 128)"></path></svg>
-                     <span>Reiniciar Proyecto</span>
-                 </button>
-            </div>
         </main>
-        
-        <button id="add-transaction-btn" class="bg-primary-gold text-white w-14 h-14 rounded-full fixed bottom-6 right-6 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-            <!-- Corrected, more visible '+' icon -->
+
+        <button id="add-transaction-btn" class="hidden bg-primary-gold text-white w-14 h-14 rounded-full fixed bottom-6 right-6 items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M228,128a12,12,0,0,1-12,12H136v80a12,12,0,0,1-24,0V140H32a12,12,0,0,1,0-24h80V36a12,12,0,0,1,24,0v80h80A12,12,0,0,1,228,128Z"></path></svg>
         </button>
 
         <div id="modal-container"></div>
-        
-        <div id="toast" class="toast hidden fixed bottom-24 right-6 bg-primary-dark text-white py-2 px-4 rounded-lg shadow-xl">
-            <p id="toast-message"></p>
-        </div>
-
+        <div id="toast" class="toast hidden fixed bottom-24 right-6 bg-primary-dark text-white py-2 px-4 rounded-lg shadow-xl"><p id="toast-message"></p></div>
     </div>
 
-    <script>
-        const app = {
-            db: null,
-            currentFilter: 'all',
-            // Corrected: Logo embedded as Base64 to prevent path errors
-            logoBase64: 'data:image/png;base64,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',
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-            defaultDB: {
-                project: {
-                    name: "Nueva Obra",
-                    totalValue: 0,
-                    estimatedBudget: 0,
-                    transactions: []
+        // *********************************************************************************
+        // PASO 1: Pega tu configuración de Firebase aquí
+        // Reemplaza este objeto con el que obtuviste de la consola de Firebase.
+        // *********************************************************************************
+        const firebaseConfig = {
+  apiKey: "AIzaSyBPju-qziiySXSOwjiPW9pcR0_mwFE5j1s",
+  authDomain: "presupuestos-px.firebaseapp.com",
+  projectId: "presupuestos-px",
+  storageBucket: "presupuestos-px.firebasestorage.app",
+  messagingSenderId: "758674286792",
+  appId: "1:758674286792:web:703ed99be79fd5e4ac5dfd",
+  measurementId: "G-K3H3KSEHQ7"
+};
+        
+        // --- NO MODIFICAR DEBAJO DE ESTA LÍNEA ---
+        const appFirebase = initializeApp(firebaseConfig);
+        const db = getFirestore(appFirebase);
+
+        const app = {
+            projectData: null,
+            projectId: null,
+            currentFilter: 'all',
+            unsubscribe: null, // To stop listening to DB changes
+
+            init() {
+                this.attachEventListeners();
+                this.checkLocalProjectId();
+            },
+            
+            checkLocalProjectId() {
+                const localId = localStorage.getItem('presupuestosPXProjectId');
+                if (localId) {
+                    this.loadProject(localId);
+                } else {
+                    this.showToast("Crea un proyecto nuevo o carga uno con su ID.");
+                    document.getElementById('reset-btn').querySelector('span').textContent = 'Crear Proyecto Nuevo';
                 }
             },
 
-            init() {
-                // Set logo first
-                document.getElementById('logo-img').src = this.logoBase64;
+            async loadProject(id) {
+                if (!id) {
+                    this.showToast("Por favor, ingresa un ID.");
+                    return;
+                }
+                this.projectId = id.trim();
 
-                this.loadData();
-                this.updateUI();
-                this.registerSW();
-                this.attachEventListeners();
+                if (this.unsubscribe) this.unsubscribe(); // Stop listening to the old project
+
+                const docRef = doc(db, "projects", this.projectId);
+                
+                this.showToast("Cargando proyecto...");
+                
+                this.unsubscribe = onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        this.projectData = docSnap.data();
+                        this.showToast("Proyecto cargado y sincronizado.");
+                        this.showMainContent();
+                        this.updateUI();
+                    } else {
+                        this.showToast("ID no encontrado. ¿Quieres crear un proyecto nuevo con este ID?");
+                        this.projectData = null; // Clear old data
+                        this.hideMainContent();
+                        document.getElementById('reset-btn').querySelector('span').textContent = 'Crear Proyecto Nuevo';
+                    }
+                    localStorage.setItem('presupuestosPXProjectId', this.projectId);
+                }, (error) => {
+                    console.error("Error listening to project: ", error);
+                    this.showToast("Error de conexión. Verifica la configuración de Firebase.");
+                });
+            },
+
+            async createNewProject() {
+                let newId = this.projectId || `proj_${Date.now()}`;
+                const newProjectData = {
+                    name: "Mi Nueva Obra",
+                    totalValue: 0,
+                    estimatedBudget: 0,
+                    transactions: []
+                };
+                
+                try {
+                    await setDoc(doc(db, "projects", newId), newProjectData);
+                    this.loadProject(newId);
+                } catch(e) {
+                    console.error("Error creating document: ", e);
+                    this.showToast("Error al crear el proyecto.");
+                }
+            },
+
+            showMainContent() {
+                document.getElementById('main-content').classList.remove('hidden');
+                document.getElementById('add-transaction-btn').classList.add('flex');
+                document.getElementById('add-transaction-btn').classList.remove('hidden');
+                document.getElementById('project-id-input').value = this.projectId;
+                document.getElementById('project-id-display').classList.remove('hidden');
+                document.getElementById('load-project-section').classList.add('hidden');
+                document.getElementById('reset-btn').querySelector('span').textContent = 'Crear/Cargar Otro Proyecto';
+            },
+
+            hideMainContent() {
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('add-transaction-btn').classList.remove('flex');
+                document.getElementById('add-transaction-btn').classList.add('hidden');
+                document.getElementById('project-id-display').classList.add('hidden');
+                document.getElementById('load-project-section').classList.remove('hidden');
+            },
+
+            resetApp() {
+                if(this.unsubscribe) this.unsubscribe();
+                localStorage.removeItem('presupuestosPXProjectId');
+                this.projectId = null;
+                this.projectData = null;
+                this.hideMainContent();
+                document.getElementById('load-id-input').value = '';
+                this.showToast("Listo para crear o cargar un proyecto.");
+                document.getElementById('reset-btn').querySelector('span').textContent = 'Crear Proyecto Nuevo';
+
             },
             
-            // ... (el resto del código JS no cambia) ...
+            async saveData() {
+                if (!this.projectId || !this.projectData) return;
+                try {
+                    await setDoc(doc(db, "projects", this.projectId), this.projectData);
+                    this.showToast("Cambios guardados en la nube.");
+                } catch(e) {
+                    console.error("Error saving data: ", e);
+                    this.showToast("Error al guardar. Verifica tu conexión.");
+                }
+            },
 
-            attachEventListeners() {
+            // (El resto de la lógica de UI, modales, etc., es muy similar pero ahora modifica `this.projectData`)
+            // ... [ attachEventListeners, formatCurrency, updateUI, renderTransactionList, etc.]
+
+             attachEventListeners() {
+                document.getElementById('load-project-btn').addEventListener('click', () => {
+                    const idToLoad = document.getElementById('load-id-input').value;
+                    this.loadProject(idToLoad);
+                });
+
+                document.getElementById('copy-id-btn').addEventListener('click', () => {
+                    const idInput = document.getElementById('project-id-input');
+                    idInput.select();
+                    document.execCommand('copy');
+                    this.showToast("ID copiado al portapapeles.");
+                });
+                
+                document.getElementById('reset-btn').addEventListener('click', () => {
+                    if (!this.projectId) {
+                        this.createNewProject();
+                    } else {
+                        this.resetApp();
+                    }
+                });
+
+                // Attach main content listeners
                 document.getElementById('add-transaction-btn').addEventListener('click', () => this.openTransactionModal());
                 document.getElementById('edit-project-btn').addEventListener('click', () => this.openProjectModal());
                 document.getElementById('export-btn').addEventListener('click', () => this.exportData());
-                document.getElementById('reset-btn').addEventListener('click', () => this.confirmReset());
 
                 document.querySelectorAll('.filter-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        this.setFilter(e.target.dataset.filter);
-                    });
+                    button.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
                 });
             },
             
@@ -180,13 +303,15 @@
             },
             
             updateUI() {
-                const proj = this.db.project;
-                
+                if (!this.projectData) return;
+
+                const proj = this.projectData;
                 document.getElementById('project-name').textContent = proj.name;
 
-                const totalGastosIncluidos = proj.transactions.filter(t => t.type === 'gasto_incluido').reduce((sum, t) => sum + t.amount, 0);
-                const totalGastosExtras = proj.transactions.filter(t => t.type === 'gasto_extra').reduce((sum, t) => sum + t.amount, 0);
-                const totalAbonos = proj.transactions.filter(t => t.type === 'abono_cliente').reduce((sum, t) => sum + t.amount, 0);
+                const transactions = proj.transactions || [];
+                const totalGastosIncluidos = transactions.filter(t => t.type === 'gasto_incluido').reduce((sum, t) => sum + t.amount, 0);
+                const totalGastosExtras = transactions.filter(t => t.type === 'gasto_extra').reduce((sum, t) => sum + t.amount, 0);
+                const totalAbonos = transactions.filter(t => t.type === 'abono_cliente').reduce((sum, t) => sum + t.amount, 0);
                 
                 const totalGastadoGeneral = totalGastosIncluidos + totalGastosExtras;
                 const presupuestoDisponible = proj.estimatedBudget - totalGastadoGeneral;
@@ -196,10 +321,8 @@
                 document.getElementById('total-spent').textContent = this.formatCurrency(totalGastadoGeneral);
                 document.getElementById('client-balance').textContent = this.formatCurrency(saldoCliente);
 
-                const filteredTransactions = proj.transactions.filter(t => {
-                    if (this.currentFilter === 'all') {
-                        return t.type === 'gasto_incluido' || t.type === 'gasto_extra';
-                    }
+                const filteredTransactions = transactions.filter(t => {
+                    if (this.currentFilter === 'all') return t.type === 'gasto_incluido' || t.type === 'gasto_extra';
                     return t.type === this.currentFilter;
                 });
 
@@ -207,17 +330,10 @@
                 const filteredTitleEl = document.getElementById('filtered-total-title');
                 
                 switch(this.currentFilter) {
-                    case 'gasto_incluido':
-                        filteredTitleEl.textContent = 'Total Gastos Incluidos';
-                        break;
-                    case 'gasto_extra':
-                        filteredTitleEl.textContent = 'Total Gastos Extras';
-                        break;
-                    case 'abono_cliente':
-                        filteredTitleEl.textContent = 'Total Abonos';
-                        break;
-                    default:
-                        filteredTitleEl.textContent = 'Total de Gastos';
+                    case 'gasto_incluido': filteredTitleEl.textContent = 'Total Gastos Incluidos'; break;
+                    case 'gasto_extra': filteredTitleEl.textContent = 'Total Gastos Extras'; break;
+                    case 'abono_cliente': filteredTitleEl.textContent = 'Total Abonos'; break;
+                    default: filteredTitleEl.textContent = 'Total de Gastos';
                 }
                 document.getElementById('filtered-total').textContent = this.formatCurrency(filteredTotal);
 
@@ -233,7 +349,7 @@
                 listEl.innerHTML = ''; 
 
                 if (transactions.length === 0) {
-                    listEl.innerHTML = `<p class="text-gray-500 italic text-center mt-4">No hay movimientos que coincidan con el filtro.</p>`;
+                    listEl.innerHTML = `<p class="text-gray-500 italic text-center mt-4">No hay movimientos que coincidan.</p>`;
                     return;
                 }
 
@@ -244,10 +360,10 @@
                     const typeText = t.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
 
                     const transactionEl = document.createElement('div');
-                    transactionEl.className = 'bg-white p-3 rounded-lg border flex justify-between items-center animate-fade-in';
+                    transactionEl.className = 'bg-white p-3 rounded-lg border flex justify-between items-center';
                     transactionEl.innerHTML = `
                         <div class="flex items-center space-x-3">
-                            ${t.imageUrl ? `<img src="${t.imageUrl}" class="w-12 h-12 rounded-md object-cover cursor-pointer" onclick="app.showImage('${t.imageUrl}')">` : '<div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#9CA3AF" viewBox="0 0 256 256"><path d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8ZM112,88a32,32,0,1,1-32,32A32,32,0,0,1,112,88Zm-4.4,55.6L80,184H176l-32.8-54.67a8,8,0,0,0-13.6,0Z"></path></svg></div>'}
+                             <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#9CA3AF" viewBox="0 0 256 256"><path d="M200,32H56A24,24,0,0,0,32,56V200a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V56A24,24,0,0,0,200,32Zm8,168a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8ZM112,88a32,32,0,1,1-32,32A32,32,0,0,1,112,88Zm-4.4,55.6L80,184H176l-32.8-54.67a8,8,0,0,0-13.6,0Z"></path></svg></div>
                             <div>
                                 <p class="font-semibold">${t.description}</p>
                                 <p class="text-xs text-gray-500">${new Date(t.date).toLocaleDateString('es-CO')} - ${typeText}</p>
@@ -261,147 +377,37 @@
                     listEl.appendChild(transactionEl);
                 });
             },
-
-            saveData() {
-                localStorage.setItem('presupuestosPXDB', JSON.stringify(this.db));
-                this.showToast('Datos guardados.');
-            },
-
-            loadData() {
-                const data = localStorage.getItem('presupuestosPXDB');
-                if (data) {
-                    this.db = JSON.parse(data);
-                } else {
-                    this.db = JSON.parse(JSON.stringify(this.defaultDB));
-                }
-            },
-
-            createModal(title, content, options = {}) {
-                const modalContainer = document.getElementById('modal-container');
-                const modal = document.createElement('div');
-                modal.id = 'modal';
-                modal.className = 'modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50';
-                
-                let headerHTML = `
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-primary-dark">${title}</h3>
-                        <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
-                    </div>`;
-
-                modal.innerHTML = `
-                    <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6 transform scale-95">
-                        ${options.noHeader ? '' : headerHTML}
-                        <div>${content}</div>
-                    </div>
-                `;
-                modalContainer.appendChild(modal);
-
-                setTimeout(() => {
-                    modal.classList.add('opacity-100');
-                    modal.querySelector('.modal-content').classList.remove('scale-95');
-                }, 10);
-
-                modal.addEventListener('click', (e) => {
-                    if (e.target.id === 'modal') this.closeModal();
-                });
-                if (!options.noHeader) {
-                    document.getElementById('close-modal-btn').addEventListener('click', () => this.closeModal());
-                }
-                return modal;
-            },
-            
-            closeModal() {
-                const modal = document.getElementById('modal');
-                if (modal) {
-                    modal.classList.remove('opacity-100');
-                    modal.querySelector('.modal-content').classList.add('scale-95');
-                    setTimeout(() => {
-                        if (modal.parentElement) {
-                            modal.parentElement.innerHTML = '';
-                        }
-                    }, 250);
-                }
-            },
             
             openProjectModal() {
                  const content = `
                     <form id="project-form" class="space-y-4">
-                        <div>
-                            <label for="p-name" class="block text-sm font-medium text-gray-700">Nombre de la Obra</label>
-                            <input type="text" id="p-name" value="${this.db.project.name}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold focus:border-primary-gold" required>
-                        </div>
-                        <div>
-                            <label for="p-total" class="block text-sm font-medium text-gray-700">Valor Total ($)</label>
-                            <input type="number" id="p-total" value="${this.db.project.totalValue}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold focus:border-primary-gold" required>
-                        </div>
-                        <div>
-                            <label for="p-budget" class="block text-sm font-medium text-gray-700">Presupuesto Estimado ($)</label>
-                            <input type="number" id="p-budget" value="${this.db.project.estimatedBudget}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold focus:border-primary-gold" required>
-                        </div>
-                        <div class="flex justify-end pt-2">
-                            <button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg font-semibold hover:bg-opacity-90">Guardar Cambios</button>
-                        </div>
+                        <div><label for="p-name" class="block text-sm font-medium text-gray-700">Nombre de la Obra</label><input type="text" id="p-name" value="${this.projectData.name}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold" required></div>
+                        <div><label for="p-total" class="block text-sm font-medium text-gray-700">Valor Total ($)</label><input type="number" id="p-total" value="${this.projectData.totalValue}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold" required></div>
+                        <div><label for="p-budget" class="block text-sm font-medium text-gray-700">Presupuesto Estimado ($)</label><input type="number" id="p-budget" value="${this.projectData.estimatedBudget}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold" required></div>
+                        <div class="flex justify-end pt-2"><button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg font-semibold hover:bg-opacity-90">Guardar Cambios</button></div>
                     </form>
                 `;
                 const modal = this.createModal('Editar Detalles de la Obra', content);
                 modal.querySelector('#project-form').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    this.db.project.name = document.getElementById('p-name').value;
-                    this.db.project.totalValue = parseFloat(document.getElementById('p-total').value);
-                    this.db.project.estimatedBudget = parseFloat(document.getElementById('p-budget').value);
+                    this.projectData.name = document.getElementById('p-name').value;
+                    this.projectData.totalValue = parseFloat(document.getElementById('p-total').value);
+                    this.projectData.estimatedBudget = parseFloat(document.getElementById('p-budget').value);
                     this.saveData();
-                    this.updateUI();
                     this.closeModal();
                 });
             },
 
             openTransactionModal() {
-                let imageDataUrl = null;
                 const content = `
                     <form id="transaction-form" class="space-y-4">
-                        <div>
-                            <label for="t-description" class="block text-sm font-medium text-gray-700">Descripción</label>
-                            <input type="text" id="t-description" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold focus:border-primary-gold" required>
-                        </div>
-                        <div>
-                            <label for="t-amount" class="block text-sm font-medium text-gray-700">Monto ($)</label>
-                            <input type="number" id="t-amount" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold focus:border-primary-gold" required>
-                        </div>
-                        <div>
-                            <label for="t-type" class="block text-sm font-medium text-gray-700">Tipo de Movimiento</label>
-                            <select id="t-type" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-gold focus:border-primary-gold">
-                                <option value="gasto_incluido">Gasto Incluido</option>
-                                <option value="gasto_extra">Gasto Extra</option>
-                                <option value="abono_cliente">Abono del Cliente</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="t-photo" class="block text-sm font-medium text-gray-700">Adjuntar Foto (Opcional)</label>
-                            <input type="file" id="t-photo" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-                            <img id="t-preview" class="hidden mt-2 w-24 h-24 object-cover rounded-md">
-                        </div>
-                        <div class="flex justify-end pt-2">
-                            <button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg font-semibold hover:bg-opacity-90">Agregar</button>
-                        </div>
+                         <div><label for="t-description" class="block text-sm font-medium text-gray-700">Descripción</label><input type="text" id="t-description" class="mt-1 block w-full border rounded-md py-2 px-3" required></div>
+                         <div><label for="t-amount" class="block text-sm font-medium text-gray-700">Monto ($)</label><input type="number" id="t-amount" class="mt-1 block w-full border rounded-md py-2 px-3" required></div>
+                         <div><label for="t-type" class="block text-sm font-medium text-gray-700">Tipo</label><select id="t-type" class="mt-1 block w-full border rounded-md py-2 px-3"><option value="gasto_incluido">Gasto Incluido</option><option value="gasto_extra">Gasto Extra</option><option value="abono_cliente">Abono Cliente</option></select></div>
+                         <div class="flex justify-end pt-2"><button type="submit" class="bg-primary-dark text-white py-2 px-5 rounded-lg font-semibold">Agregar</button></div>
                     </form>
                 `;
                 const modal = this.createModal('Nuevo Movimiento', content);
-
-                const photoInput = modal.querySelector('#t-photo');
-                const previewEl = modal.querySelector('#t-preview');
-                photoInput.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            imageDataUrl = event.target.result;
-                            previewEl.src = imageDataUrl;
-                            previewEl.classList.remove('hidden');
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-
                 modal.querySelector('#transaction-form').addEventListener('submit', (e) => {
                     e.preventDefault();
                     const newTransaction = {
@@ -410,93 +416,79 @@
                         amount: parseFloat(document.getElementById('t-amount').value),
                         type: document.getElementById('t-type').value,
                         date: new Date().toISOString(),
-                        imageUrl: imageDataUrl
                     };
-
-                    this.db.project.transactions.push(newTransaction);
+                    if (!this.projectData.transactions) this.projectData.transactions = [];
+                    this.projectData.transactions.push(newTransaction);
                     this.saveData();
-                    this.updateUI();
                     this.closeModal();
                 });
             },
             
-            confirmReset() {
-                const content = `
-                    <p class="text-center text-gray-700 mb-6">¿Estás seguro de que quieres borrar todos los datos del proyecto actual? Esta acción no se puede deshacer.</p>
-                    <div class="flex justify-center space-x-4">
-                        <button id="cancel-reset" class="py-2 px-6 bg-gray-200 text-gray-800 rounded-lg font-semibold">Cancelar</button>
-                        <button id="confirm-reset-btn" class="py-2 px-6 bg-red-600 text-white rounded-lg font-semibold">Sí, Reiniciar</button>
-                    </div>
-                `;
-                const modal = this.createModal('Confirmar Reinicio', content, { noHeader: true });
-                document.getElementById('confirm-reset-btn').addEventListener('click', () => this.resetProject());
-                document.getElementById('cancel-reset').addEventListener('click', () => this.closeModal());
+            deleteTransaction(id) {
+                this.projectData.transactions = this.projectData.transactions.filter(t => t.id !== id);
+                this.saveData();
             },
 
-            resetProject() {
-                this.db = JSON.parse(JSON.stringify(this.defaultDB));
-                this.currentFilter = 'all';
-                this.saveData();
-                this.updateUI();
-                this.closeModal();
-                this.showToast('Proyecto reiniciado.');
-            },
-            
             exportData() {
+                if(!this.projectData) return;
                 try {
-                    const dataStr = JSON.stringify(this.db, null, 2);
+                    const dataStr = JSON.stringify(this.projectData, null, 2);
                     const dataBlob = new Blob([dataStr], {type: "application/json"});
                     const url = URL.createObjectURL(dataBlob);
                     const link = document.createElement('a');
-                    link.download = `presupuesto_px_${new Date().toISOString().slice(0,10)}.json`;
+                    link.download = `presupuesto_px_${this.projectId}.json`;
                     link.href = url;
                     link.click();
                     URL.revokeObjectURL(url);
-                    this.showToast('Datos exportados.');
-                } catch (error) {
-                    console.error("Error exporting data:", error);
-                    this.showToast('Error al exportar.');
-                }
-            },
-            
-            deleteTransaction(id) {
-                this.db.project.transactions = this.db.project.transactions.filter(t => t.id !== id);
-                this.saveData();
-                this.updateUI();
-                this.showToast('Movimiento eliminado.');
+                } catch (error) { console.error("Error exporting data:", error); }
             },
 
-            showImage(imageUrl) {
-                const content = `<img src="${imageUrl}" class="w-full h-auto rounded-lg">`;
-                this.createModal('Vista Previa', content);
+            createModal(title, content) {
+                const modalContainer = document.getElementById('modal-container');
+                const modal = document.createElement('div');
+                modal.id = 'modal';
+                modal.className = 'modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50';
+                modal.innerHTML = `
+                    <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-primary-dark">${title}</h3>
+                            <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+                        </div>
+                        <div>${content}</div>
+                    </div>
+                `;
+                modalContainer.appendChild(modal);
+                modal.addEventListener('click', (e) => { if (e.target.id === 'modal') this.closeModal(); });
+                document.getElementById('close-modal-btn').addEventListener('click', () => this.closeModal());
+                return modal;
+            },
+            
+            closeModal() {
+                const modal = document.getElementById('modal');
+                if (modal) modal.parentElement.innerHTML = '';
             },
 
             showToast(message) {
                 const toastEl = document.getElementById('toast');
-                const msgEl = document.getElementById('toast-message');
-                msgEl.textContent = message;
+                toastEl.querySelector('p').textContent = message;
                 toastEl.classList.remove('hidden');
-                setTimeout(() => {
-                    toastEl.classList.add('hidden');
-                }, 3000);
+                setTimeout(() => toastEl.classList.add('hidden'), 3000);
             },
-
+            
             registerSW() {
                 if ('serviceWorker' in navigator) {
                     window.addEventListener('load', () => {
                         navigator.serviceWorker.register('./sw.js')
-                            .then(reg => console.log('Service worker registered successfully', reg))
-                            .catch(err => console.error('Service worker registration failed', err));
+                            .then(reg => console.log('SW registered.', reg))
+                            .catch(err => console.error('SW registration failed: ', err));
                     });
                 }
             }
         };
         
-        window.onload = () => {
-            app.init();
-        };
+        app.init();
+
     </script>
 </body>
 </html>
-
 
