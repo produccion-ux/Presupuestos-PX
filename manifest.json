@@ -1,7 +1,7 @@
 {
   "name": "Presupuestos PX",
   "short_name": "Presupuestos",
-  "description": "Una aplicación para gestionar presupuestos de obras y gastos.",
+  "description": "Una aplicación para gestionar presupuestos de obras y gastos con sincronización en la nube.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#00353F",
@@ -19,3 +19,4 @@
     }
   ]
 }
+
