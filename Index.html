@@ -37,7 +37,6 @@
             90% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-20px); }
         }
-        /* Filter button styles */
         .filter-btn {
             padding: 0.5rem 1rem;
             border-radius: 9999px;
@@ -55,19 +54,16 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <!-- App Container -->
     <div id="app" class="max-w-lg mx-auto bg-white min-h-screen shadow-lg">
-        <!-- Header -->
         <header class="bg-primary-dark p-4 shadow-md sticky top-0 z-10 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img id="logo-img" src="./logo-192.png" alt="Logo PX" class="h-10 w-10">
+                <!-- Logo image will be set by JS -->
+                <img id="logo-img" alt="Logo PX" class="h-10 w-10">
                 <h1 class="text-2xl font-bold text-white">Presupuestos PX</h1>
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="p-4 space-y-6 pb-24">
-            <!-- Project Details -->
             <div id="project-details" class="space-y-2">
                 <div class="flex justify-between items-center">
                     <h2 id="project-name" class="text-xl font-semibold text-primary-dark"></h2>
@@ -77,7 +73,6 @@
                 </div>
             </div>
 
-            <!-- Summary Cards -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg">
                     <h3 class="text-sm font-medium text-blue-700">Presupuesto Disponible</h3>
@@ -97,23 +92,17 @@
                 </div>
             </div>
 
-            <!-- Transactions -->
             <div>
                  <h3 class="text-lg font-semibold mb-2 text-primary-dark">Movimientos</h3>
-                <!-- Filters -->
                 <div class="flex space-x-2 mb-4 text-sm" id="filter-buttons">
                     <button data-filter="all" class="filter-btn active">Todos los Gastos</button>
                     <button data-filter="gasto_incluido" class="filter-btn">Incluidos</button>
                     <button data-filter="gasto_extra" class="filter-btn">Extras</button>
                     <button data-filter="abono_cliente" class="filter-btn">Abonos</button>
                 </div>
-                <!-- Transactions List -->
-                <div id="transactions-list" class="space-y-3">
-                    <!-- Transactions will be dynamically inserted here -->
-                </div>
+                <div id="transactions-list" class="space-y-3"></div>
             </div>
 
-            <!-- Actions Section -->
             <div class="mt-8 border-t pt-6 space-y-3">
                  <h3 class="text-lg font-semibold text-primary-dark">Acciones del Proyecto</h3>
                  <button id="export-btn" class="w-full bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-300">
@@ -127,15 +116,13 @@
             </div>
         </main>
         
-        <!-- FAB to add transaction -->
         <button id="add-transaction-btn" class="bg-primary-gold text-white w-14 h-14 rounded-full fixed bottom-6 right-6 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>
+            <!-- Corrected, more visible '+' icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M228,128a12,12,0,0,1-12,12H136v80a12,12,0,0,1-24,0V140H32a12,12,0,0,1,0-24h80V36a12,12,0,0,1,24,0v80h80A12,12,0,0,1,228,128Z"></path></svg>
         </button>
 
-        <!-- Modals -->
         <div id="modal-container"></div>
         
-        <!-- Toast Notification -->
         <div id="toast" class="toast hidden fixed bottom-24 right-6 bg-primary-dark text-white py-2 px-4 rounded-lg shadow-xl">
             <p id="toast-message"></p>
         </div>
@@ -146,6 +133,8 @@
         const app = {
             db: null,
             currentFilter: 'all',
+            // Corrected: Logo embedded as Base64 to prevent path errors
+            logoBase64: 'data:image/png;base64,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',
 
             defaultDB: {
                 project: {
@@ -157,11 +146,16 @@
             },
 
             init() {
+                // Set logo first
+                document.getElementById('logo-img').src = this.logoBase64;
+
                 this.loadData();
                 this.updateUI();
                 this.registerSW();
                 this.attachEventListeners();
             },
+            
+            // ... (el resto del código JS no cambia) ...
 
             attachEventListeners() {
                 document.getElementById('add-transaction-btn').addEventListener('click', () => this.openTransactionModal());
@@ -190,7 +184,6 @@
                 
                 document.getElementById('project-name').textContent = proj.name;
 
-                // --- Global Calculations ---
                 const totalGastosIncluidos = proj.transactions.filter(t => t.type === 'gasto_incluido').reduce((sum, t) => sum + t.amount, 0);
                 const totalGastosExtras = proj.transactions.filter(t => t.type === 'gasto_extra').reduce((sum, t) => sum + t.amount, 0);
                 const totalAbonos = proj.transactions.filter(t => t.type === 'abono_cliente').reduce((sum, t) => sum + t.amount, 0);
@@ -199,15 +192,12 @@
                 const presupuestoDisponible = proj.estimatedBudget - totalGastadoGeneral;
                 const saldoCliente = proj.totalValue - totalAbonos;
 
-                // Update global summary cards
                 document.getElementById('available-budget').textContent = this.formatCurrency(presupuestoDisponible);
                 document.getElementById('total-spent').textContent = this.formatCurrency(totalGastadoGeneral);
                 document.getElementById('client-balance').textContent = this.formatCurrency(saldoCliente);
 
-                // --- Filtered Calculations & Rendering ---
                 const filteredTransactions = proj.transactions.filter(t => {
                     if (this.currentFilter === 'all') {
-                        // **CHANGE**: Only include expense types
                         return t.type === 'gasto_incluido' || t.type === 'gasto_extra';
                     }
                     return t.type === this.currentFilter;
@@ -216,7 +206,6 @@
                 const filteredTotal = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
                 const filteredTitleEl = document.getElementById('filtered-total-title');
                 
-                // Update filtered total card
                 switch(this.currentFilter) {
                     case 'gasto_incluido':
                         filteredTitleEl.textContent = 'Total Gastos Incluidos';
@@ -227,15 +216,13 @@
                     case 'abono_cliente':
                         filteredTitleEl.textContent = 'Total Abonos';
                         break;
-                    default: // "all" case
+                    default:
                         filteredTitleEl.textContent = 'Total de Gastos';
                 }
                 document.getElementById('filtered-total').textContent = this.formatCurrency(filteredTotal);
 
-                // --- Render transactions list ---
                 this.renderTransactionList(filteredTransactions);
                 
-                // Update filter button active state
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.filter === this.currentFilter);
                 });
@@ -473,7 +460,6 @@
             },
             
             deleteTransaction(id) {
-                // Simplified confirmation
                 this.db.project.transactions = this.db.project.transactions.filter(t => t.id !== id);
                 this.saveData();
                 this.updateUI();
@@ -512,5 +498,4 @@
     </script>
 </body>
 </html>
-
 
